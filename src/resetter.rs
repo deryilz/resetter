@@ -74,7 +74,7 @@ impl<'a> Resetter<'a> {
         self.run_command("/gamerule sendcommandfeedback false");
         self.run_command("/setblock ~ ~69 ~ barrier");
         self.run_command("/tp ~ ~70 ~ 0 180");
-        self.run_command("/effect @s night_vision 10000 20");
+        self.run_command("/effect @s night_vision 10000 20 true");
         self.run_command(&format!("/me {}", self.seed));
         sleep_ms(300);
     }
