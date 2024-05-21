@@ -77,13 +77,8 @@ impl<'a> Resetter<'a> {
     }
 
     pub fn wait_for_load(&mut self) {
-        self.execute_actions(
-            &[
-                Action::RecordColor(SampleColor::White),
-                Action::WaitForColorChange,
-            ],
-            0,
-        );
+        self.execute_action(&Action::RecordColor(SampleColor::White));
+        self.execute_action(&Action::WaitForColorChange);
         sleep_ms(300);
     }
 
@@ -99,34 +94,34 @@ impl<'a> Resetter<'a> {
             .expect("Couldn't save image.");
     }
 
-    pub fn run_overworld_commands(&mut self) {
-        // self.run_command("/gamerule sendcommandfeedback false");
-        self.run_command("/setblock ~ ~69 ~ barrier");
-        self.run_command("/tp ~ ~70 ~ 0 180");
-        self.run_command("/effect @s night_vision 10000 20 true");
-        self.run_command("/locate buriedtreasure");
-        self.run_command(&format!("/me {}", self.seed));
-        sleep_ms(300);
-    }
+    // pub fn run_overworld_commands(&mut self) {
+    //     // self.run_command("/gamerule sendcommandfeedback false");
+    //     self.run_command("/setblock ~ ~69 ~ barrier");
+    //     self.run_command("/tp ~ ~70 ~ 0 180");
+    //     // self.run_command("/effect @s night_vision 10000 20 true");
+    //     // self.run_command("/locate buriedtreasure");
+    //     self.run_command(&format!("/me {}", self.seed));
+    //     sleep_ms(300);
+    // }
 
-    pub fn run_enter_nether_commands(&mut self) {
-        self.run_command("/tp ~ 50 ~50");
-        self.run_command("/setblock ~ ~ ~ portal");
-    }
+    // pub fn run_enter_nether_commands(&mut self) {
+    //     self.run_command("/tp ~ 50 ~50");
+    //     self.run_command("/setblock ~ ~ ~ portal");
+    // }
 
-    pub fn run_nether_commands(&mut self) {
-        for bad_block in ["lava", "netherrack"] {
-            self.run_command(&format!(
-                "/fill ~-15 ~ ~-15 ~15 ~25 ~15 air 0 replace {}",
-                bad_block
-            ));
-        }
+    // pub fn run_nether_commands(&mut self) {
+    //     for bad_block in ["lava", "netherrack"] {
+    //         self.run_command(&format!(
+    //             "/fill ~-15 ~ ~-15 ~15 ~25 ~15 air 0 replace {}",
+    //             bad_block
+    //         ));
+    //     }
 
-        self.run_command("/setblock ~ ~20 ~ barrier");
-        self.run_command("/tp ~ ~21 ~ 0 180");
-        self.run_command("/locate ruinedportal");
-        self.run_command(&format!("/me {}", self.seed));
-    }
+    //     self.run_command("/setblock ~ ~20 ~ barrier");
+    //     self.run_command("/tp ~ ~21 ~ 0 180");
+    //     self.run_command("/locate ruinedportal");
+    //     self.run_command(&format!("/me {}", self.seed));
+    // }
 
     pub fn run_command(&mut self, text: &str) {
         self.execute_actions(

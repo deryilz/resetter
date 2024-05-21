@@ -1,5 +1,6 @@
 use std::fs;
 
+use itertools::Itertools;
 use resetter::Resetter;
 
 use crate::{actions::Actions, util::sleep_ms};
@@ -32,28 +33,28 @@ fn main() {
 
     fs::create_dir_all("./output").expect("Couldn't create ./output folder.");
 
-    let input = fs::read_to_string("./input/seeds.txt").expect("Couldn't read ./input/seeds.txt");
-    let seeds = input.lines();
+    let input = include_str!("../input/seeds.txt");
 
     let actions = Actions::default();
 
-    for seed in seeds {
+    for line in input.lines() {
+        let split = line.split_whitespace().collect_vec();
+        let seed = split[0];
+        let coords: (i32, i32, i32) = split[2..]
+            .iter()
+            .map(|str| str.parse().unwrap())
+            .collect_tuple()
+            .unwrap();
+
         println!("Checking seed {}", seed);
 
         let mut resetter = Resetter::new(&minecraft, seed);
         resetter.execute_actions(&actions.world_creation, 150);
         resetter.wait_for_load();
 
-        resetter.run_overworld_commands();
+        let tp_command = format!("/tp {} {} {} 0 180", coords.0, coords.1 + 1, coords.2);
+        resetter.run_command(&tp_command);
         resetter.save_screenshot(&format!("./output/{}-1.jpg", seed));
-
-        resetter.run_enter_nether_commands();
-        resetter.wait_for_load();
-        
-        sleep_ms(2500);
-
-        resetter.run_nether_commands();
-        resetter.save_screenshot(&format!("./output/{}-2.jpg", seed));
 
         resetter.execute_actions(&actions.game_quitting, 250);
         resetter.wait_for_load();
