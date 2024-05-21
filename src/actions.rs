@@ -52,7 +52,7 @@ impl Default for Actions {
                 Key(Down),
                 Key(BackSpace),
                 PasteSeed,
-                Key(Enter),
+                Key(Escape),
                 Key(Down),
                 Key(Down),
                 Key(Down),

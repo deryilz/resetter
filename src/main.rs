@@ -1,10 +1,5 @@
-use std::{
-    fs::{self, File},
-    io::BufWriter,
-};
+use std::fs;
 
-use actions::Action;
-use image::codecs::jpeg::JpegEncoder;
 use resetter::Resetter;
 
 use crate::{actions::Actions, util::sleep_ms};
@@ -20,6 +15,8 @@ fn main() {
         std::process::exit(0);
     });
 
+    sleep_ms(1000);
+
     // Create a UnicodeKeyboard instance
 
     // Type each character3
@@ -28,10 +25,10 @@ fn main() {
 
     let windows = xcap::Window::all().unwrap();
 
-    let minecraft = match windows.iter().find(|it| it.title() == "Minecraft") {
-        Some(window) => window,
-        None => return eprintln!("Couldn't find Minecraft window. Launch it and run this again."),
-    };
+    let minecraft = windows
+        .iter()
+        .find(|it| it.title() == "Minecraft")
+        .expect("Couldn't find Minecraft window. Launch it and run this again.");
 
     fs::create_dir_all("./output").expect("Couldn't create ./output folder.");
 
@@ -43,24 +40,25 @@ fn main() {
     for seed in seeds {
         println!("Checking seed {}", seed);
 
-        sleep_ms(1000);
-
         let mut resetter = Resetter::new(&minecraft, seed);
-        resetter.execute_actions(&actions.world_creation, 100);
+        resetter.execute_actions(&actions.world_creation, 150);
         resetter.wait_for_load();
 
-        sleep_ms(1000);
+        resetter.run_overworld_commands();
+        resetter.save_screenshot(&format!("./output/{}-1.jpg", seed));
 
-        resetter.run_commands();
-
-        let image = minecraft.capture_image().expect("Couldn't capture screen.");
-        let path = format!("./output/{}.jpg", seed);
-        let writer = BufWriter::new(File::create(path).unwrap());
-        let mut encoder = JpegEncoder::new_with_quality(writer, 50);
-        encoder.encode_image(&image).expect("Couldn't save image.");
-
-        resetter.execute_actions(&actions.game_quitting, 200);
+        resetter.run_enter_nether_commands();
         resetter.wait_for_load();
+        
+        sleep_ms(2500);
+
+        resetter.run_nether_commands();
+        resetter.save_screenshot(&format!("./output/{}-2.jpg", seed));
+
+        resetter.execute_actions(&actions.game_quitting, 250);
+        resetter.wait_for_load();
+
+        sleep_ms(500);
 
         println!("Done with seed!");
     }
