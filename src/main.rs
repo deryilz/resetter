@@ -33,15 +33,16 @@ fn main() {
 
     fs::create_dir_all("./output").expect("Couldn't create ./output folder.");
 
-    let input = include_str!("../input/seeds.txt");
+    let input = include_str!("../dev/seeds.txt");
 
     let actions = Actions::default();
 
     for line in input.lines() {
         let split = line.split_whitespace().collect_vec();
         let seed = split[0];
-        let coords: (i32, i32, i32) = split[2..]
+        let coords: (i32, i32, i32) = split
             .iter()
+            .skip(3)
             .map(|str| str.parse().unwrap())
             .collect_tuple()
             .unwrap();
